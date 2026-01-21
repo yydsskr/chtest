@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动漫角色匹配测试</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --gradient-primary: linear-gradient(135deg, #4f46e5, #7c3aed, #ec4899);
+            --gradient-1: linear-gradient(135deg, #ef4444, #f97316);
+            --gradient-2: linear-gradient(135deg, #22c55e, #10b981);
+            --gradient-3: linear-gradient(135deg, #3b82f6, #6366f1);
+            --gradient-4: linear-gradient(135deg, #8b5cf6, #a855f7);
+            --gradient-5: linear-gradient(135deg, #ec4899, #f43f5e);
+            --gradient-6: linear-gradient(135deg, #06b6d4, #0891b2);
+            --gradient-7: linear-gradient(135deg, #f97316, #ea580c);
+            --gradient-8: linear-gradient(135deg, #10b981, #059669);
+            --gradient-9: linear-gradient(135deg, #6b7280, #374151);
+            --gradient-10: linear-gradient(135deg, #dc2626, #b91c1c);
+            --gradient-11: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            --gradient-12: linear-gradient(135deg, #f59e0b, #d97706);
+            --gradient-13: linear-gradient(135deg, #ec4899, #db2777);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e1b4b, #581c87, #9d174d);
+            color: white;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-top: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(45deg, #fff, #f0abfc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            color: #c4b5fd;
+            font-size: 1.1rem;
+        }
+        
+        .progress {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 24px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 16px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .question-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .option-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        
+        .footer-text {
+            text-align: center;
+            color: #c4b5fd;
+            margin-top: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        /* Result Page Styles */
+        .result-container {
+            display: none;
+        }
+        
+        .character-header {
+            background: var(--gradient-primary);
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        
+        .character-name {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .character-latin {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            margin-bottom: 24px;
+        }
+        
+        .character-quote {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            font-size: 1.5rem;
+            font-style: italic;
+            line-height: 1.4;
+        }
+        
+        .result-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-content {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #e0e7ff;
+        }
+        
+        .retry-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 16px;
+            display: block;
+        }
+        
+        .retry-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .question-text {
+                font-size: 1.3rem;
+            }
+            
+            .character-name {
+                font-size: 2.2rem;
+            }
+            
+            .character-quote {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Quiz Section -->
+        <div id="quiz-section">
+            <div class="header">
+                <h1>🎭 动漫角色匹配测试</h1>
+                <p>回答15个问题，找到最适合你的动漫角色</p>
+                <div class="progress" id="progress-text">问题 1 / 15</div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-text" id="question-text"></div>
+                <div class="options" id="options-container"></div>
+            </div>
+            
+            <div class="footer-text">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                (∩^o^)⊃━☆ﾟ.*･｡
+            </div>
+        </div>
+        
+        <!-- Result Section -->
+        <div id="result-section" class="result-container">
+            <div class="header">
+                <h1>✨ 你的动漫角色匹配结果 ✨</h1>
+                <p>基于你的选择，我们为你找到了最契合的角色</p>
+            </div>
+            
+            <div class="character-header" id="character-header">
+                <div class="character-name" id="character-name"></div>
+                <div class="character-latin" id="character-latin"></div>
+                <div class="character-quote" id="character-quote"></div>
+            </div>
+            
+            <div class="result-section">
+                <div class="section-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                    角色解析
+                </div>
+                <div class="section-content" id="character-description"></div>
+            </div>
+            
+            <div style="text-align: center;">
+                <button class="retry-btn" onclick="resetQuiz()">再测一次</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz data with updated questions and options (without "其他" options)
+        const questions = [
+            {
+                text: "周末你更傾向於如何度過？",
+                options: [
+                    { text: "獨自在家中看書、聽音樂、打遊戲，享受安靜", points: [1, 4, 6, 11] },
+                    { text: "和親密好友小聚，聊心事或一起做點小事", points: [2, 3, 9] },
+                    { text: "參加活動、演出、漫展，認識新朋友", points: [8, 12, 13] },
+                    { text: "制定計劃學習或提升技能，為未來做準備", points: [1, 5] },
+                    { text: "隨緣，看心情，可能躺平也可能突然出門", points: [7, 10] }
+                ]
+            },
+            {
+                text: "當團隊陷入混亂或爭吵，你會怎麼做？",
+                options: [
+                    { text: "主動站出來協調，試圖重建秩序", points: [1, 5] },
+                    { text: "默默觀察，只在被問到時才給出建議", points: [7, 10, 11] },
+                    { text: "直接指出問題核心，哪怕會得罪人", points: [4, 8, 12] },
+                    { text: "先安撫情緒，再慢慢解決問題", points: [2, 3, 6, 13] }
+                ]
+            },
+            {
+                text: "你如何看待「被需要」這件事？",
+                options: [
+                    { text: "如果沒人需要我，我就沒有存在的價值", points: [7] },
+                    { text: "我願意被需要，但前提是對方也尊重我", points: [1, 3, 6, 9] },
+                    { text: "我不需要被需要，我只為自己而活", points: [8, 10, 11] },
+                    { text: "被需要讓我有成就感，但也會感到壓力", points: [2, 4, 5, 12, 13] }
+                ]
+            },
+            {
+                text: "面對別人的負面評價，你通常會：",
+                options: [
+                    { text: "反覆回想，懷疑自己是不是真的做錯了", points: [3, 6, 7, 9, 13] },
+                    { text: "冷靜分析，如果是對的就改進，錯的就忽略", points: [1, 2, 5, 11] },
+                    { text: "直接反駁，維護自己的立場", points: [4, 8, 12] },
+                    { text: "根本不在意，覺得你又不瞭解我", points: [10] }
+                ]
+            },
+            {
+                text: "你理想中的「羈絆」是什麼樣的？",
+                options: [
+                    { text: "深刻、唯一、靈魂共鳴，一生只此一人", points: [7] },
+                    { text: "互相支持但保持獨立，不捆綁彼此", points: [3, 9] },
+                    { text: "熱鬧、多元、朋友越多越好", points: [8, 12, 13] },
+                    { text: "實用主義：能一起做事、共渡難關就行", points: [1, 4, 5, 10, 11] }
+                ]
+            },
+            {
+                text: "當你感到巨大壓力時，第一反應是：",
+                options: [
+                    { text: "崩潰、想躲起來，甚至希望消失", points: [7] },
+                    { text: "咬牙硬撐，絕不讓別人看到軟弱", points: [1] },
+                    { text: "找信任的人傾訴，尋求安慰", points: [2, 3, 6, 9, 12, 13] },
+                    { text: "轉移注意力，比如打遊戲、刷影片", points: [4, 8, 9, 10, 11] },
+                    { text: "把壓力轉化為行動，瘋狂工作或學習", points: [5] }
+                ]
+            },
+            {
+                text: "你是否願意為他人犧牲自己的利益？",
+                options: [
+                    { text: "會，尤其是對我在乎的人", points: [1, 2, 3, 6, 7, 13] },
+                    { text: "看情況，如果對方值得", points: [4, 5, 8, 9, 12] },
+                    { text: "不會，先保護好自己", points: [10, 11] }
+                ]
+            },
+            {
+                text: "你更像哪種動物？（可象徵性選擇）",
+                options: [
+                    { text: "貓頭鷹：冷靜、觀察、夜間思考者", points: [1, 4, 6, 10, 11] },
+                    { text: "狼：孤獨但有領袖氣質，忠於小群體", points: [5] },
+                    { text: "小貓：表面活潑，內心敏感怕被拋棄", points: [3, 7, 9] },
+                    { text: "海豚：社交、友善、情緒感知強", points: [2, 8, 12, 13] }
+                ]
+            },
+            {
+                text: "你是否容易因愧疚而妥協？",
+                options: [
+                    { text: "是的，即使委屈自己也不想傷害別人", points: [2, 3, 6, 7, 9, 13] },
+                    { text: "會反思，但不會無底線退讓", points: [1, 12] },
+                    { text: "很少，我覺得對就是對，錯就是錯", points: [4, 5, 8, 10, 11] }
+                ]
+            },
+            {
+                text: "你如何看待「面具」或「人設」？",
+                options: [
+                    { text: "戴上面具，才能做真實的自己", points: [3, 9] },
+                    { text: "面具是謊言，我討厭偽裝", points: [11] },
+                    { text: "人設是工具，該用就用", points: [1, 4, 5, 8, 10, 12] },
+                    { text: "我有很多面，看場合切換", points: [2, 6, 9, 13] },
+                    { text: "我不知道哪個才是真的我", points: [7] }
+                ]
+            },
+            {
+                text: "你更容易被哪種人吸引？",
+                options: [
+                    { text: "冷靜、神秘、有故事的人", points: [7] },
+                    { text: "熱情、直接、能帶給我能量的人", points: [13] },
+                    { text: "聰明、有才華、能和我思想共鳴的人", points: [4, 6, 8, 11, 12] },
+                    { text: "溫柔、穩定、能給我安全感的人", points: [1, 2, 3, 9] },
+                    { text: "強大、果斷、能帶我前進的人", points: [5, 10] }
+                ]
+            },
+            {
+                text: "當朋友突然疏遠你，你會：",
+                options: [
+                    { text: "不斷反思自己哪裡做錯了", points: [9] },
+                    { text: "尊重對方選擇，但內心久久無法釋懷", points: [2, 3, 6, 7] },
+                    { text: "直接問清楚，不猜來猜去", points: [4, 5, 8, 12, 13] },
+                    { text: "無所謂，舊的不去新的不來", points: [10, 11] }
+                ]
+            },
+            {
+                text: "你的人生信條更接近哪句？",
+                options: [
+                    { text: "即使世界崩塌，我也要重建它", points: [1, 5] },
+                    { text: "只要有人等我，我就不會消失", points: [2, 3, 6] },
+                    { text: "我不說，但我在看", points: [4, 10, 11] },
+                    { text: "別靠近我，除非你懂我的沉默", points: [7, 9] },
+                    { text: "今天也要被愛包圍", points: [8, 12, 13] }
+                ]
+            },
+            {
+                text: "你如何面對失敗？",
+                options: [
+                    { text: "覺得是自己不夠好，陷入自責", points: [3, 6, 7, 9, 13] },
+                    { text: "分析原因，下次做得更好", points: [1, 2, 4, 5, 11, 13] },
+                    { text: "裝作沒事，但很久都走不出來", points: [3, 6, 7, 9] },
+                    { text: "失敗？那只是還沒成功", points: [8, 10, 12] }
+                ]
+            },
+            {
+                text: "你最不能接受的關係模式是？",
+                options: [
+                    { text: "被控制、被道德綁架", points: [1, 4, 5, 11] },
+                    { text: "被忽視、被冷暴力", points: [2, 3, 7, 9, 13] },
+                    { text: "被欺騙、被背叛", points: [6, 12] },
+                    { text: "被利用、被占便宜", points: [8, 10] }
+                ]
+            }
+        ];
+
+        const characters = {
+            1: {
+                name: "赛罗·佛鲁巴兹",
+                latin: "判处勇者刑",
+                quote: "责任不是枷锁，而是我存在的意义。",
+                description: "你背负的不仅是弑神之罪，更是千万人对正义的期待。冷峻的外表下，藏着无法放任他人受苦的灼热之心。你以为孤独是赎罪的代价，却不知真正的救赎始于学会接受他人的援手。你的坚毅不是与生俱来，而是每一次在深渊边缘咬牙站起的证明。",
+                gradient: "--gradient-1"
+            },
+            2: {
+                name: "虎杖悠仁",
+                latin: "咒术回战 第三季",
+                quote: "即使世界充满痛苦，也要相信明天会更好。",
+                description: "你的笑容是精心打磨的铠甲，温柔下藏着撕裂宿命的锋芒。你总说“救人是理所当然”，却忘了自己也是需要被拯救的人。在绝望的深渊里，你教会他人希望，却最难说服自己值得被爱。你的强大不在于咒力，而在于敢于为弱者流泪的勇气。",
+                gradient: "--gradient-2"
+            },
+            3: {
+                name: "和仓优希",
+                latin: "魔都精兵的奴隶",
+                quote: "我或许平凡，但绝不会放弃守护重要的人。",
+                description: "温柔是你最锋利的武器，也是你最沉重的负担。你习惯把需求藏在笑容背后，像一杯温热的牛奶——治愈他人，却独自冷却。当战斗的硝烟散去，你总在厨房默默准备宵夜，因为“被需要”是你确认存在的方式。你的强大，在于敢用柔软对抗世界的坚硬。",
+                gradient: "--gradient-3"
+            },
+            4: {
+                name: "四宫辉夜",
+                latin: "辉夜大小姐",
+                quote: "爱情不是计算，但我的每一步都是为了靠近你。",
+                description: "你的高墙由家族荣誉砌成，却在某个笨蛋撞进来时裂开缝隙。你以为控制一切就能避免心碎，却忘了爱情的本质是失控。深夜独自练习告白台词时，镜中映出的不是财阀千金，而是渴望被平凡爱着的女孩。你的傲娇不是游戏，而是保护真心的最后防线。",
+                gradient: "--gradient-4"
+            },
+            5: {
+                name: "白银御行",
+                latin: "辉夜大小姐",
+                quote: "天赋是别人的，努力才是我的武器。",
+                description: "西装革履下藏着补丁内衣，完美成绩单背后是便利店打工到凌晨的疲惫。你习惯用“学生会长”的面具遮住伤痕，却在某个雨夜被她看见：那个为妹妹学费奔波的少年，比任何领袖姿态都耀眼。你以为爱是筹码，却不知最珍贵的礼物，是愿意在她面前卸下铠甲的脆弱。",
+                gradient: "--gradient-5"
+            },
+            6: {
+                name: "山吹有栖",
+                latin: "午夜心旋律",
+                quote: "即使出身决定起点，梦想决定终点。",
+                description: "财阀少爷的身份是金笼，收音机里的声音是钥匙。你理性分析每一步风险，却在深夜独自录制广播节目——那是你不敢在现实中袒露的真心。你以为追寻阿波罗是追逐理想，其实是在寻找一个能接纳“不完美山吹有栖”的世界。你的浪漫不是冲动，而是精密计算后的孤注一掷。",
+                gradient: "--gradient-6"
+            },
+            7: {
+                name: "福原多闻",
+                latin: "现在多闻君是哪一面！？",
+                quote: "面具下的我，才是真实的我。",
+                description: "舞台上的狂放是铠甲，现实中的阴郁是伤口。你享受聚光灯的热度，却害怕灯光熄灭后独自面对黑暗。当粉丝高呼“多闻君最帅”时，你笑着鞠躬，心里却在问：“如果看见卸妆后的眼泪，你们还会爱我吗？”你的分裂不是虚伪，而是找不到一个能同时容纳两面自我的缝隙。",
+                gradient: "--gradient-7"
+            },
+            8: {
+                name: "修奇",
+                latin: "身为魔族的我想告白",
+                quote: "战斗是我的本能，但爱你是我的选择。",
+                description: "魔族王子的身份让你习惯用獠牙示人，却在心动时笨拙得像人类少年。中二台词是你的盾牌，掩盖着“害怕被拒绝”的恐慌。你挥剑斩断千军万马，却不敢直视她的眼睛说“我喜欢你”。你的强势不是傲慢，而是守护珍视之物的姿态——包括那颗从未示人的少女心。",
+                gradient: "--gradient-8"
+            },
+            9: {
+                name: "界世之介",
+                latin: "和青梅竹马之间不会有恋爱喜剧",
+                quote: "我不是英雄，只是不想看到重要的人受伤。",
+                description: "普通高中生的身份是你最自豪的勋章。面对青梅竹马的捉弄，你红着脸结巴的样子，比任何情话都真诚。你以为爱情是轰轰烈烈，却在便当盒里发现：她记得你不吃香菜，却偷偷放了一颗代表心意的糖果。你的优柔寡断不是懦弱，而是害怕一步错就失去整个世界。",
+                gradient: "--gradient-9"
+            },
+            10: {
+                name: "幽鬼",
+                latin: "以死亡游戏为生",
+                quote: "游戏规则由我制定，但胜利属于懂得生存的人。",
+                description: "女仆装与兔女郎装是你在死亡游戏中的伪装，黑色幽默是你对抗绝望的武器。你说“只为赏金而战”，却在队友濒死时撕毁合约书：“这次，我赌上性命也要带你们出去。”你的冷漠不是无情，而是看透生死后，仍选择在废墟中种花的温柔。",
+                gradient: "--gradient-10"
+            },
+            11: {
+                name: "芙莉莲",
+                latin: "葬送的芙莉莲",
+                quote: "千年不过一瞬，但你的笑容值得我记住。",
+                description: "精灵的漫长寿命让你习惯把情感锁进魔法书，却在某个少年为救你而受伤时，第一次感到“时间太短”。你收集魔法不是为了力量，而是想留住那些易逝的人类温度——比如辛美尔烤焦的面包，比如菲伦赌气时的侧脸。你的理性不是冷漠，而是害怕再次经历“拥有后失去”的痛。",
+                gradient: "--gradient-11"
+            },
+            12: {
+                name: "有马加奈",
+                latin: "我推的孩子",
+                quote: "舞台是我的战场，聚光灯下没有失败者。",
+                description: "天才童星的光环下，藏着比同龄人更早熟的孤独。你用毒舌推开关心，因为童星的脆弱会被视为“演技”。深夜对镜子练习笑容时，你问自己：“如果摘下明星面具，还有人爱真实的我吗？”你的傲沉不是任性，而是用尖刺保护内里那个渴望被无条件接纳的小女孩。",
+                gradient: "--gradient-12"
+            },
+            13: {
+                name: "星野瑠美衣（露比）",
+                latin: "我推的孩子",
+                quote: "即使世界充满黑暗，我的梦想永不熄灭。",
+                description: "偶像的耀眼笑容下，藏着复仇的火焰与救赎的渴望。你以为热情是武器，却在拥抱他人时才明白：真正的力量是敢在黑暗中依然相信光。你说“要成为阿库亚的光”，却不知自己早已是他坠落时唯一的救赎。你的天真不是无知，而是看透人性丑恶后，依然选择相信美好的勇气。",
+                gradient: "--gradient-13"
+            }
+        };
+
+        // State
+        let currentQuestion = 0;
+        let scores = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0};
+
+        // DOM Elements
+        const quizSection = document.getElementById('quiz-section');
+        const resultSection = document.getElementById('result-section');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressText = document.getElementById('progress-text');
+
+        // Initialize quiz
+        function initQuiz() {
+            renderQuestion();
+        }
+
+        // Render current question
+        function renderQuestion() {
+            const question = questions[currentQuestion];
+            questionText.textContent = question.text;
+            progressText.textContent = `问题 ${currentQuestion + 1} / ${questions.length}`;
+            
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.innerHTML = `
+                    <div class="option-letter">${String.fromCharCode(65 + index)}</div>
+                    <span>${option.text}</span>
+                `;
+                button.onclick = () => handleAnswer(option.points);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        // Handle answer selection
+        function handleAnswer(points) {
+            // Update scores for selected characters
+            points.forEach(charId => {
+                if (scores.hasOwnProperty(charId)) {
+                    scores[charId] += 1;
+                }
+            });
+            
+            // Move to next question or show result
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        // Show result page
+        function showResult() {
+            const winner = getWinner();
+            const character = characters[winner];
+            
+            // Set character data
+            document.getElementById('character-name').textContent = character.name;
+            document.getElementById('character-latin').textContent = character.latin;
+            document.getElementById('character-quote').textContent = character.quote;
+            document.getElementById('character-description').textContent = character.description;
+            
+            // Set gradient based on character
+            const header = document.getElementById('character-header');
+            header.style.background = `var(${character.gradient})`;
+            
+            // Switch sections
+            quizSection.style.display = 'none';
+            resultSection.style.display = 'block';
+        }
+
+        // Get winning character
+        function getWinner() {
+            let maxScore = -1;
+            let winner = 1;
+            for (const [key, value] of Object.entries(scores)) {
+                if (value > maxScore) {
+                    maxScore = value;
+                    winner = parseInt(key);
+                }
+            }
+            return winner;
+        }
+
+        // Reset quiz
+        function resetQuiz() {
+            currentQuestion = 0;
+            scores = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0};
+            resultSection.style.display = 'none';
+            quizSection.style.display = 'block';
+            renderQuestion();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initQuiz();
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
